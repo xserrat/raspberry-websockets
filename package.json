@@ -24,6 +24,9 @@
   "homepage": "https://github.com/balena-io-projects/simple-server-node#readme",
   "dependencies": {
     "express": "*",
-    "ejs": "*"
+    "ejs": "*",
+    "node-sense-hat": "0.0.2",
+    "@simonwep/pickr": "1.4.6",
+    "socket.io": "^2.3.0"
   }
 }
