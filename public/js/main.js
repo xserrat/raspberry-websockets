@@ -39,6 +39,15 @@ pickr = new Pickr(Object.assign({
     default: '#42445a'
 }, config));
 
+var input_text = document.querySelector('.input_text').addEventListener('input', function (event) {
+    var text = event.target.value;
+    var current_color = pickr.getSelectedColor().toRGBA().slice(0, 3).map(c => Math.round(c));
+    socket.emit('change_letter', {
+       "letter": text,
+       "color_code": current_color
+    });
+});
+
 pickr.on('init', instance => {
     // console.log('init', instance);
 }).on('hide', instance => {
@@ -51,7 +60,7 @@ pickr.on('init', instance => {
     // console.log('clear', instance);
 }).on('change', (color, instance) => {
     socket.emit('change_color', {
-        "color_code": color.toRGBA()
+        "color_code": color.toRGBA().slice(0, 3).map(c => Math.round(c))
     });
     // console.log('change', color, instance);
 }).on('changestop', instance => {
@@ -64,4 +73,55 @@ pickr.on('init', instance => {
 
 socket.on('server_connected', function (data) {
     console.log(data.message);
+});
+
+const CELL_SIZE = '50px';
+
+class Table
+{
+    constructor(width, height) {
+        this.width = width;
+        this.height = height;
+
+        this.table = document.createElement('table');
+        this.table.setAttribute('id', 'matrix');
+
+        for (let i = 0; i < this.width; i++) {
+            var row = document.createElement('tr');
+            for (let j = 0; j < this.height; j++) {
+                var column = document.createElement('td');
+                column.setAttribute('id', i + '_' + j);
+                column.setAttribute('width', CELL_SIZE);
+                column.setAttribute('height', CELL_SIZE);
+                row.appendChild(column);
+            }
+
+            this.table.appendChild(row);
+        }
+    }
+
+    update() {
+        document.getElementById('matrix').replaceWith(this.table);
+    }
+
+    setColorTo(row, column, color) {
+        console.log(row, column);
+        document.getElementById(row + '_' + column).style.backgroundColor = "rgb(" + color[0] + "," + color[1] + "," + color[2] + ")";
+    }
+}
+
+var table = new Table(8, 8);
+table.update();
+
+socket.on('update_matrix', function (data) {
+    let updated_matrix = data.matrix;
+
+    console.log(updated_matrix);
+
+    for (let i=0; i < updated_matrix.length; i++) {
+        for (let j=0; j < updated_matrix[i].length; j++) {
+            let color = updated_matrix[i][j];
+            table.setColorTo(i, j, color);
+        }
+    }
 });

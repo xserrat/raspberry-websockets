@@ -60,7 +60,13 @@ class Matrix {
             });
         });
 
-        image_sense.setPixels(final_matrix);
+        this.raw_matrix = final_matrix;
+
+        image_sense.setPixels(this.raw_matrix);
+    }
+
+    finalMatrix() {
+      return this.matrix;
     }
 
     down() {
@@ -114,7 +120,6 @@ class Matrix {
     }
 
     applyCursor() {
-      console.log(this.cursor);
         this.turnOn(this.cursor.x, this.cursor.y);
     }
 
@@ -124,8 +129,8 @@ class Matrix {
     }
 }
 
-var O = [255, 255, 255];  // White
-var X = [255, 0, 0];  // Red
+var O = [255, 0, 255];
+var X = [255, 255, 0];
 
 var matrix = new Matrix(O, X);
 matrix.apply();
@@ -133,7 +138,7 @@ matrix.apply();
 
 io.on('connection', function (socket) {
     socket.emit('server_connected', {
-        "message": "Socket connected!"
+        message: "Socket connected!"
     });
 
     socket.on('change_color', function (data) {
@@ -144,6 +149,9 @@ io.on('connection', function (socket) {
         target.on("press", direction => {
           matrix[direction]();
           console.log("Joystick pressed in " + direction + " direction");
+          socket.emit('update_matrix', {
+            matrix: matrix.finalMatrix()
+          });
         });
     });
 });

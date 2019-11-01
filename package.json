@@ -25,6 +25,7 @@
   "dependencies": {
     "express": "*",
     "ejs": "*",
+    "sense-hat-led": "1.0.1",
     "node-sense-hat": "0.0.2",
     "@simonwep/pickr": "1.4.6",
     "socket.io": "^2.3.0"

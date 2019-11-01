@@ -3,3 +3,7 @@
   align-self: center;
   justify-content: center;
 }
+
+table, th, td {
+  border: 1px solid black;
+}
